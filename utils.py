@@ -7,7 +7,7 @@ from glob import glob
 import torch
 import torchvision
 import PIL
-
+import numpy as np
 
 def get_fastai_version():
     with open('fastai/../setup.py') as f:
@@ -32,15 +32,21 @@ def get_mnist(path):
     train = torch.load(os.path.join(path, 'processed/training.pt'))
     test = torch.load(os.path.join(path, 'processed/test.pt'))
 
+    np.save(os.path.join(path, 'train_x'), train[0].numpy())
+    np.save(os.path.join(path, 'train_y'), train[1].numpy())
+
+    np.save(os.path.join(path, 'test_x'), test[0].numpy())
+    np.save(os.path.join(path, 'test_y'), test[1].numpy())
+
     for i in range(len(train[0])):
         img = PIL.Image.fromarray(train[0][i].numpy())
         label = str(train[1][i])
-        img.save(f'{os.path.join(path, "train", label, str(i))}.png')
+        img.save(f'{os.path.join(path, "train", label, str(i))}.png', mode='L')
 
     for i in range(len(test[0])):
         img = PIL.Image.fromarray(test[0][i].numpy())
         label = str(test[1][i])
-        img.save(f'{os.path.join(path, "test", label, str(i))}.png')
+        img.save(f'{os.path.join(path, "test", label, str(i))}.png', model='L')
 
 
 def get_cifar10(path):
