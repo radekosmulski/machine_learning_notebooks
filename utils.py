@@ -67,3 +67,6 @@ def get_cifar10(path):
             fname = re.search('\w*.png$', fpath).group(0)
             shutil.copy(fpath, f'{path}cifar10/{ds}/{cls}/{fname}')
 
+
+def get_from_dict(d, n):
+    return dict(list(d.items())[:n])
