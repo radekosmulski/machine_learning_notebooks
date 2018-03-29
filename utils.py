@@ -8,6 +8,7 @@ import torch
 import torchvision
 import PIL
 import numpy as np
+from matplotlib import pyplot as plt
 
 def get_fastai_version():
     with open('fastai/../setup.py') as f:
@@ -70,3 +71,24 @@ def get_cifar10(path):
 
 def get_from_dict(d, n):
     return dict(list(d.items())[:n])
+
+def get_param_count(m):
+    return np.sum([o.numel() for o in m.parameters()])
+
+def str_to_coord_ary(s):
+    return [int(coord) for coord in s.split()]
+
+def bb_hw_to_fastai(o):
+    if isinstance(o, str): o = str_to_coord_ary(o)
+    return [o[1], o[0], o[1]+o[3]-1, o[0]+o[2]-1]
+
+def bb_fastai_to_hw(o):
+    if isinstance(o, str): o = str_to_coord_ary(o)
+    return np.array([o[1],o[0],o[3]-o[1],o[2]-o[0]])
+
+def show_image(im, figsize=None, ax=None):
+    if not ax: fig,ax = plt.subplots(figsize=figsize)
+    ax.imshow(im)
+    ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    return ax
