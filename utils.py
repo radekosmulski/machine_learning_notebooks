@@ -88,7 +88,7 @@ def bb_fastai_to_hw(o):
     if isinstance(o, str): o = str_to_coord_ary(o)
     return np.array([o[1],o[0],o[3]-o[1],o[2]-o[0]])
 
-def _show_im(im, figsize=None, ax=None):
+def show_im(im, figsize=None, ax=None):
     if not ax: fig,ax = plt.subplots(figsize=figsize)
     ax.imshow(im)
     ax.get_xaxis().set_visible(False)
@@ -97,7 +97,7 @@ def _show_im(im, figsize=None, ax=None):
 
 def show_image(fn_or_ary, cats=None, bbs=None, ax=None, figsize=None):
     im = fn_or_ary if isinstance(fn_or_ary, np.ndarray) else open_image(fn_or_ary)
-    ax = _show_im(im, figsize, ax)
+    ax = show_im(im, figsize, ax)
     if bbs is None: bbs = []
     elif not isinstance(bbs[0], (list, np.ndarray)): bbs=[bbs]
     if cats is not None and not isinstance(cats, list): cats = [cats]
@@ -109,11 +109,21 @@ def draw_outline(o, lw):
     o.set_path_effects([patheffects.Stroke(
         linewidth=lw, foreground='black'), patheffects.Normal()])
 
-def draw_rect(ax, b):
-    patch = ax.add_patch(patches.Rectangle(b[:2], *b[-2:], fill=False, edgecolor='white', lw=2))
+def draw_rect(ax, b, color='white'):
+    patch = ax.add_patch(patches.Rectangle(b[:2], *b[-2:], fill=False, edgecolor=color, lw=2))
     draw_outline(patch, 4)
 
-def draw_text(ax, xy, txt, sz=14):
+def draw_text(ax, xy, txt, sz=14, color='white'):
     text = ax.text(*xy, txt,
-        verticalalignment='top', color='white', fontsize=sz, weight='bold')
+        verticalalignment='top', color=color, fontsize=sz, weight='bold')
     draw_outline(text, 1)
+
+def recall(preds, targs, thresh=0.5):
+    pred_pos = preds > thresh
+    tpos = torch.mul((targs.byte() == pred_pos), targs.byte())
+    return tpos.sum()/targs.sum()
+
+def precision(preds, targs, thresh=0.5):
+    pred_pos = preds > thresh
+    tpos = torch.mul((targs.byte() == pred_pos), targs.byte())
+    return tpos.sum()/pred_pos.sum()
