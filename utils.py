@@ -88,11 +88,19 @@ def bb_fastai_to_hw(o):
     if isinstance(o, str): o = str_to_coord_ary(o)
     return np.array([o[1],o[0],o[3]-o[1],o[2]-o[0]])
 
-def show_im(im, figsize=None, ax=None):
+def show_im(im, figsize=None, ax=None, show_grid=False, im_dim=(224, 224), grid_size=4):
     if not ax: fig,ax = plt.subplots(figsize=figsize)
     ax.imshow(im)
-    ax.get_xaxis().set_visible(False)
-    ax.get_yaxis().set_visible(False)
+    if show_grid == True:
+        h, w = im_dim
+        ax.set_xticks(np.linspace(0, w, grid_size + 1))
+        ax.set_yticks(np.linspace(0, h, grid_size + 1))
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+        ax.grid()
+    else:
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
     return ax
 
 def show_image(fn_or_ary, cats=None, bbs=None, ax=None, figsize=None):
